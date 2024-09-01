@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navnegenerator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ba0c2f; /* Rød bakgrunn */
+            color: #003e7e; /* Blå tekstfarge */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            box-sizing: border-box;
+            min-height: 300px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #003e7e; /* Blå farge */
+        }
+        #name {
+            font-size: 48px;
+            font-weight: bolder;
+            text-align: center; /* Midtstiller navnet */
+            font-family: 'Dancing Script', cursive; /* Bruker Dancing Script-fonten */
+            color: #ba0c2f; /* Blå tekstfarge for navnet */
+        }
+        .row {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+        .box {
+            flex: 1;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .form-options {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .checkbox-container {
+            display: flex;
+            flex-direction: column;
+            margin-left: 20px; /* Litt avstand til høyre for rullegardinmenyer */
+        }
+        select, input[type="checkbox"], button {
+            color: #003e7e; /* Blå tekstfarge */
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #003e7e; /* Blå kantfarge */
+            border-radius: 4px;
+        }
+        button {
+            background-color: #003e7e; /* Blå bakgrunn */
+            color: #fff; /* Hvit tekstfarge */
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            padding: 15px 20px;
+            margin-top: 20px; /* Plass til knappen */
+        }
+        button:hover {
+            background-color: #00205b; /* Mørkere blå når hover */
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            color: #003e7e; /* Blå tekstfarge for etikett */
+        }
+        .checkbox-label input {
+            margin-right: 10px;
+        }
+        /* Stil for avmerkingsbokser */
+        input[type="checkbox"] {
+            appearance: none; /* Fjerner standard utseende */
+            -webkit-appearance: none; /* Fjerner standard utseende på Webkit-baserte nettlesere */
+            background-color: #fff; /* Hvit bakgrunn */
+            border: 2px solid #003e7e; /* Blå kantfarge */
+            border-radius: 4px;
+            width: 20px; /* Størrelse på boksen */
+            height: 20px;
+            cursor: pointer;
+            position: relative;
+            display: inline-block; /* For å få boksen til å vises i linje med teksten */
+        }
+        /* Stil for kryss i avmerkingsboksen når den er merket */
+        input[type="checkbox"]:checked::before {
+            content: '';
+            display: block;
+            width: 14px; /* Litt mindre enn boksen */
+            height: 14px;
+            background: #003e7e; /* Blå bakgrunn når merket */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 4px; /* Runder av kantene på den blå fargen */
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Name Generator</h1>
+        <div id="name"></div> <!-- Generert navn vises her -->
+        <div class="row">
+            <div class="form-container box">
+                <label for="period">Select time period:</label>
+                <select id="period">
+                    <option value="1800-1900">1800-1900</option>
+                    <option value="1900-2000">1900-2000</option>
+                </select>
+
+                <label for="gender">Select gender:</label>
+                <select id="gender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            <div class="checkbox-container box">
+                <div class="checkbox-label">
+                    <input type="checkbox" id="danishNorse">
+                    <label for="danishNorse">Danish-Norwegian style (experimental)</label>
+                </div>
+
+                <div class="checkbox-label">
+                    <input type="checkbox" id="generateFirstName" checked>
+                    <label for="generateFirstName">Generate firstname</label>
+                </div>
+
+                <div class="checkbox-label">
+                    <input type="checkbox" id="generateLastName" checked>
+                    <label for="generateLastName">Generate lastname</label>
+                </div>
+            </div>
+        </div>
+        <button id="generate" class="full-width-button">Generate name</button>
+    </div>
+    <script>
+        const names = {
+            "1800-1900": {
+                male: {
+                  firstNames: [
+                      "Adolf", "Aksel", "Albert", "Alfred", "Anders", "Andreas", "Anund", "Arne", "Arnt", "August", "Axel",
+                      "Baldur", "Bernhard", "Bertinius", "Carl", "Christian", "Cornelius", "Daniel", "David", "Eilert", "Edvard",
+                      "Edvardus", "Elias", "Emil", "Emiliano", "Einar", "Erling", "Erik", "Ferdinand",
+                      "Fritjof", "Georg", "Gustaf", "Gustav", "Gustavus", "Gunder", "Gunleif", "Gunvald", "Gunnvald", "Hans", "Harald",
+                      "Herold", "Herman", "Hermanus", "Hjalmar", "Haakon", "Håkon", "Håvardus", "Henrik", "Ingmar", "Ingvald",
+                      "Ingolf", "Jakob", "Jens", "Jensenius", "Johan", "Johannes", "Jørgen", "Karl", "Kåre", "Knut",
+                      "Kristian", "Laurentius", "Leif", "Leifur", "Ludvig", "Magnusson", "Magnulf", "Martin", "Marius", "Melchior",
+                      "Niels", "Nils", "Nikolai", "Norvald", "Olaus", "Odd", "Olaf", "Olai", "Olav", "Oscar", "Oskar",
+                      "Peder", "Per", "Rasmus", "Rudolf", "Rolf", "Sigmund", "Sigurd", "Sigvard", "Sindre", "Sven", "Sverre",
+                      "Thorolf", "Torgils", "Trygve", "Valentin", "Verner", "Viktor", "Volf", "Ørnulf", "Ulfar", "Jorulf"
+                    ],
+                    lastNames: [
+                        "Andersen", "Johansen", "Olesen", "Nielsen", "Pedersen", "Hansen", "Larsen", "Christiansen",
+                        "Mikkelsen", "Knudsen", "Eriksen", "Einarsson", "Aasen", "Berg", "Haugen", "Solberg", "Tangen", "Nordland",
+                        "Sæther", "Wold", "Gran", "Strand", "Røed", "Holm", "Jakobsen", "Lie", "Sørensen", "Dalen",
+                        "Ødegård", "Nyhus", "Vangen", "Skjerven", "Vold", "Bøe", "Haugland", "Eide", "Hovland",
+                        "Gjelsten", "Jørgensen", "Myhre", "Rønning", "Simonsen", "Gundersen", "Bjerke", "Kildal",
+                        "Aulie", "Risa", "Næss", "Mæland", "Hellesund", "Hegg", "Lunde", "Jansen", "Røstad", "Hovde",
+                        "Bekken", "Risnes", "Kværner", "Nedrebø", "Steinsland", "Slettan", "Hille", "Schjelderup",
+                        "Flatland", "Håkonsen", "Tveit", "Nilsen", "Ekeland", "Vassbotn", "Bergh", "Hestnes", "Vestre",
+                        "Kolderup", "Almås", "Øyen", "Dalheim", "Aarsland", "Sund", "Brekke", "Rønning", "Aasgaard",
+                        "Bergmann", "Dahlberg", "Egge", "Falkenberg", "Gleditsch", "Hagenborg", "Jørgensen", "Kjellstad",
+                        "Løken", "Melbye", "Nergaard", "Ovesen", "Rognan", "Stavrum", "Tønnesen", "Ullestad", "Waaler",
+                        "Zetterberg", "Alstad", "Brynildsen", "Eide", "Furebotten", "Gjøsund", "Høyland", "Iversen",
+                        "Jebsen", "Kjeldsen", "Lindem", "Mæland", "Nilsen", "Oterhals", "Rasmussen", "Sundal", "Torp",
+                        "Uthaug", "Vevstad", "Wikstøl", "Åsland", "Bakken", "Gundersen", "Hedlund", "Jordheim", "Kåre",
+                        "Mollestad", "Nygård", "Reinertsen", "Solheim", "Tveit"
+                    ],
+                },
+                female: {
+                    firstNames: [
+                        "Aase", "Aagot", "Ane", "Anna", "Alfhild", "Anne", "Aslaug", "Astrid", "Astri", "Asta",
+                        "Berta", "Bertha", "Bertine", "Borghild", "Borgny", "Bjørg", "Caroline", "Dagmar", "Dagny",
+                        "Edel", "Elida", "Elin", "Elise", "Else", "Elfrid", "Emilie", "Erika", "Ester", "Frida",
+                        "Georgine", "Gerd", "Gudrun", "Gunhild", "Gunda", "Hanna", "Helga", "Hedvig", "Hjørdis",
+                        "Hilde", "Hilda", "Hildegarde", "Ida", "Inga", "Ingeborg", "Inger", "Ingerid", "Ingri",
+                        "Ingrid", "Jenny", "Johanne", "Jørgine", "Juliane", "Karen", "Karoline", "Kirsten",
+                        "Kristine", "Lena", "Lise", "Marie", "Marta", "Martha", "Magnhild", "Mona", "Nanna",
+                        "Nina", "Olga", "Oline", "Petra", "Ragna", "Randi", "Ruth", "Selma", "Sigrid", "Solveig",
+                        "Sunniva", "Synnøve", "Thorbjørg", "Tora", "Ulla", "Vally", "Vera", "Viktoria",
+                        "Wilhelmina", "Ylva", "Åse", "Ragnhild"
+                    ],
+                    lastNames: [
+                        "Andersen", "Johansen", "Olesen", "Nielsen", "Pedersen", "Hansen", "Larsen", "Christiansen",
+                        "Mikkelsen", "Knudsen", "Eriksen", "Aasen", "Berg", "Haugen", "Solberg", "Tangen", "Nordland",
+                        "Sæther", "Wold", "Gran", "Strand", "Røed", "Holm", "Jakobsen", "Lie", "Sørensen", "Dalen",
+                        "Ødegård", "Nyhus", "Vangen", "Skjerven", "Vold", "Bøe", "Haugland", "Eide", "Hovland",
+                        "Gjelsten", "Jørgensen", "Myhre", "Rønning", "Simonsen", "Gundersen", "Bjerke", "Kildal",
+                        "Aulie", "Risa", "Næss", "Mæland", "Hellesund", "Hegg", "Lunde", "Jansen", "Røstad", "Hovde",
+                        "Bekken", "Risnes", "Kværner", "Nedrebø", "Steinsland", "Slettan", "Hille", "Schjelderup",
+                        "Flatland", "Håkonsen", "Tveit", "Nilsen", "Ekeland", "Vassbotn", "Bergh", "Hestnes", "Vestre",
+                        "Kolderup", "Almås", "Øyen", "Dalheim", "Aarsland", "Sund", "Brekke", "Rønning", "Aasgaard",
+                        "Bergmann", "Dahlberg", "Egge", "Falkenberg", "Gleditsch", "Hagenborg", "Jørgensen", "Kjellstad",
+                        "Løken", "Melbye", "Nergaard", "Ovesen", "Rognan", "Stavrum", "Tønnesen", "Ullestad", "Waaler",
+                        "Zetterberg", "Alstad", "Brynildsen", "Eide", "Furebotten", "Gjøsund", "Høyland", "Iversen",
+                        "Jebsen", "Kjeldsen", "Lindem", "Mæland", "Nilsen", "Oterhals", "Rasmussen", "Sundal", "Torp",
+                        "Uthaug", "Vevstad", "Wikstøl", "Åsland", "Bakken", "Gundersen", "Hedlund", "Jordheim", "Kåre",
+                        "Mollestad", "Nygård", "Reinertsen", "Solheim", "Tveit"
+                    ],
+                }
+            },
+            "1900-2000": {
+                male: {
+                    firstNames: [
+                        "Aksel", "Alf", "Algot", "Albert", "Alfred", "Almar", "Anders", "André", "Andreas", "Arne", "Arnt", "August", "Axel",
+                        "Bendik", "Bernt", "Bertil", "Bjørn", "Brynjulf", "Cato", "Carl", "Christian", "Dag", "Dagfinn", "Daniel", "David",
+                        "Edvard", "Egil", "Elias", "Emil", "Einar", "Erling", "Erik", "Espen", "Ferdinand", "Finnian", "Frithjof", "Frode",
+                        "Georg", "Gustav", "Gunnar", "Gudmund", "Haldor", "Hans", "Harald", "Henrik", "Herman", "Håkon", "Håvard", "Ingemar",
+                        "Iver", "Jakob", "Jens", "Johan", "Johannes", "Jim", "Jon", "Karl", "Kjartan", "Kjell", "Knut", "Lars", "Leif",
+                        "Leifur", "Ludvig", "Magnus", "Martin", "Marius", "Mikkel", "Nicolai", "Nils", "Odin", "Olav", "Oskar", "Patrick",
+                        "Per", "Peter", "Ragnar", "Roald", "Rolf", "Scott", "Sigmund", "Sigurd", "Sigvard", "Sindre", "Stig", "Svein",
+                        "Sven", "Tore", "Tor", "Trond", "Ulrik", "Trygve", "Vagn", "Vidar", "Vegard", "Viktor", "Jostein", "Kristian", "Jørgen"
+                    ],
+                    lastNames: [
+                      "Aadland", "Aasheim", "Aasland", "Almås", "Andersen", "Aulie", "Bakken", "Berg", "Bergheim", "Bergmann",
+                      "Bjornstad", "Blom", "Bråten", "Christiansen", "Dahl", "Eide", "Ekeland", "Eggen", "Foss", "Gran",
+                      "Grindheim", "Gundersen", "Haug", "Haugland", "Hegg", "Hansen", "Holm", "Høyland", "Iversen", "Jansen",
+                      "Jakobsen", "Jensen", "Kinn", "Kleveland", "Knudsen", "Knutsen", "Klev", "Kvernland", "Kjellstad", "Langlo",
+                      "Larsen", "Lind", "Lie", "Løken", "Meland", "Melby", "Mikkelsen", "Moen", "Møller", "Myhre", "Nilsen",
+                      "Nordal", "Nygård", "Oderholm", "Olsen", "Pedersen", "Ramsli", "Rasmussen", "Reinertsen", "Rikstad", "Røed",
+                      "Rydland", "Sæther", "Sæternes", "Selje", "Skjerven", "Skår", "Småland", "Solberg", "Solheim", "Sondahl",
+                      "Sørensen", "Søbye", "Stavrum", "Strand", "Slettan", "Sund", "Sundal", "Tangen", "Tveit", "Urdal", "Vangen",
+                      "Vold", "Vollen", "Våge", "Wold", "Ødegaard", "Øverby", "Ådland", "Åsland", "Åserud"
+                    ],
+                },
+                female: {
+                    firstNames: [
+                      "Aase", "Ane", "Anna", "Anne", "Anne-Lise", "Astrid", "Bente", "Bernhild", "Bodil", "Caroline", "Cathrine",
+                      "Dagny", "Edel", "Elen", "Elida", "Elin", "Elise", "Eline", "Else", "Emilie", "Estrid", "Eva", "Fransiska",
+                      "Gerd", "Gunn", "Gunhild", "Grete", "Hanna", "Hilde", "Hildegunn", "Ida", "Ingrid", "Jorunn", "Juliane",
+                      "Juni", "Karen", "Karoline", "Kirsten", "Kirsti", "Kristine", "Laila", "Lena", "Lisbeth", "Lillian",
+                      "Margrethe", "Marie", "Maren", "Mathilde", "Mia", "Monica", "Monika", "Mona", "Nina", "Nora", "Olga",
+                      "Rebekka", "Renate", "Rita", "Ragnhild", "Sigrid", "Sigrun", "Silje", "Solveig", "Sunniva", "Synnøve",
+                      "Tekla", "Thea", "Thora", "Tina", "Tyra", "Ulrikke", "Vibeke", "Vigdis", "Victoria", "Vilde",
+                      "Yvonne", "Ylva", "Åse", "Gøril", "Christine"
+                    ],
+                    lastNames: [
+                      "Aadland", "Aasheim", "Aasland", "Almås", "Andersen", "Aulie", "Bakken", "Berg", "Bergheim", "Bergmann",
+                      "Bjornstad", "Blom", "Bråten", "Christiansen", "Dahl", "Eide", "Ekeland", "Eggen", "Foss", "Gran",
+                      "Grindheim", "Gundersen", "Haug", "Haugland", "Hegg", "Hansen", "Holm", "Høyland", "Iversen", "Jansen",
+                      "Jakobsen", "Jensen", "Kinn", "Kleveland", "Knudsen", "Knutsen", "Klev", "Kvernland", "Kjellstad", "Langlo",
+                      "Larsen", "Lind", "Lie", "Løken", "Meland", "Melby", "Mikkelsen", "Moen", "Møller", "Myhre", "Nilsen",
+                      "Nordal", "Nygård", "Oderholm", "Olsen", "Pedersen", "Ramsli", "Rasmussen", "Reinertsen", "Rikstad", "Røed",
+                      "Rydland", "Sæther", "Sæternes", "Selje", "Skjerven", "Skår", "Småland", "Solberg", "Solheim", "Sondahl",
+                      "Sørensen", "Søbye", "Stavrum", "Strand", "Slettan", "Sund", "Sundal", "Tangen", "Tveit", "Urdal", "Vangen",
+                      "Vold", "Vollen", "Våge", "Wold", "Ødegaard", "Øverby", "Ådland", "Åsland", "Åserud"
+                    ],
+                }
+            }
+        };
+
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function getRandomWeightedElement(arr, weights) {
+            const totalWeight = weights.reduce((a, b) => a + b, 0);
+            const random = Math.random() * totalWeight;
+            let sum = 0;
+            for (let i = 0; i < weights.length; i++) {
+                sum += weights[i];
+                if (random < sum) {
+                    return arr[i];
+                }
+            }
+        }
+
+        function getUniqueRandomElements(arr, num) {
+            let result = [];
+            let seen = new Set();
+            while (result.length < num) {
+                const el = getRandomElement(arr);
+                if (!seen.has(el)) {
+                    seen.add(el);
+                    result.push(el);
+                }
+            }
+            return result;
+        }
+
+        document.getElementById('generate').addEventListener('click', () => {
+            const period = document.getElementById('period').value;
+            const gender = document.getElementById('gender').value;
+            const danishNorse = document.getElementById('danishNorse').checked;
+            const generateFirstName = document.getElementById('generateFirstName').checked;
+            const generateLastName = document.getElementById('generateLastName').checked;
+
+            if (names[period] && names[period][gender]) {
+                const firstNames = names[period][gender].firstNames;
+                const lastNames = names[period][gender].lastNames;
+
+                let generatedName = '';
+
+                if (generateFirstName) {
+                    const numFirstNames = getRandomWeightedElement([1, 2], [0.8, 0.2]); // Adjusted weights for fewer first names
+                    const uniqueFirstNames = getUniqueRandomElements(firstNames, numFirstNames);
+                    generatedName += uniqueFirstNames.join(' ') + ' ';
+                }
+
+                if (generateLastName) {
+                    let numLastNames;
+                    if (period === '1800-1900' && gender === 'male') {
+                        // Adjusted weights for fewer last names in the 1800-1900 period for males
+                        numLastNames = getRandomWeightedElement([1, 2], [0.95, 0.05]); // Higher probability for 1 last name
+                    } else {
+                        numLastNames = getRandomWeightedElement([1, 2], [0.7, 0.3]); // Default weights for other cases
+                    }
+                    const uniqueLastNames = getUniqueRandomElements(lastNames, numLastNames);
+                    generatedName += uniqueLastNames.join(' ') + ' ';
+                }
+
+                if (danishNorse) {
+                    generatedName = generatedName
+                        .replace(/æ/g, 'ae')
+                        .replace(/ø/g, 'oe')
+                        .replace(/å/g, 'aa');
+                }
+
+                document.getElementById('name').textContent = generatedName.trim() || '';
+            } else {
+                document.getElementById('name').textContent = '';
+            }
+        });
+    </script>
+</body>
+</html>

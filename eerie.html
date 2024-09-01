@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eerie Norwegian Place Name Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #ba0c2f;
+        }
+        #generated-name {
+            font-family: 'Creepster', cursive; /* Skummel font */
+            font-size: 4em;
+            color: #003e7e;
+        }
+        button {
+            background-color: #7E3535;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #ba0c2f;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>Eerie Norwegian Place Name Generator</h1>
+    <p>Click the button to generate a random name for an eerie Norwegian place or city.</p>
+    <div id="generated-name">Your eerie name will appear here!</div>
+    <button onclick="generateName()">Generate Name</button>
+    <script>
+        const prefixes = [
+            "Arg", "Blind", "Blod", "Blot", "Dau", "Draug", "En", "Fjern", "Grim", "Gru",
+            "Grav", "Gys", "Hel", "Hugg", "Hån", "Is", "Jot", "Klam", "Knok", "Lok",
+            "Mar", "Mørk", "Myrk", "Nag", "Nagl", "Natt", "Nid", "Orm", "Ramn", "Ras",
+            "Ravn", "Seid", "Skalle", "Skam", "Skugge", "Slag", "Sort", "Svart", "Svekke",
+            "Terg", "Tær", "Ulv", "Varg", "Val", "Vold", "Vrang", "Ød"
+        ];
+
+        const suffixes = [
+            "aas", "berg", "by", "bø", "borg", "dal", "elv", "foss", "fjord", "gard",
+            "gård", "heim", "havn", "holm", "holt", "haug", "jord", "kløft", "mo",
+            "nes", "os", "rud", "skog", "stad", "sjø", "sund", "tjern", "tjønn",
+            "tun", "vik", "voll", "vann", "våg", "ø", "øy", "å", "åga", "ås"
+        ];
+
+        function generateName() {
+            // Helper function to remove final vowel if needed
+            function removeFinalVowel(word) {
+                return word.replace(/[aeiouyæøå]$/, '');
+            }
+
+            // Randomly select prefix and suffix
+            const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+            const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+
+            // Apply the rule: remove final vowel from prefix if suffix starts with vowel
+            const vowels = "aeiouyæøå";
+            const suffixStartsWithVowel = vowels.includes(suffix[0]);
+            const finalPrefixAdjusted = prefix === "Dau" ? prefix : (suffixStartsWithVowel ? removeFinalVowel(prefix) : prefix);
+
+            // Combine prefix and suffix
+            const finalName = finalPrefixAdjusted + suffix;
+
+            // Display the result
+            document.getElementById('generated-name').textContent = finalName;
+        }
+    </script>
+</body>
+</html>
